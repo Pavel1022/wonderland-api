@@ -1,11 +1,11 @@
 module.exports = (sequelize, type) => {
-    return sequelize.define('posts', {
+    return sequelize.define('comments', {
         id: {
           type: type.INTEGER,
           primaryKey: true,
           autoIncrement: true
         },
-        post: {
+        comment: {
             type: type.STRING
         }
     }, {
