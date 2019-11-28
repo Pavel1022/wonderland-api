@@ -23,6 +23,12 @@ module.exports = (sequelize, type) => {
         },
         phone: {
             type: type.STRING
+        },
+        role: {
+            type: type.STRING
+        },
+        ban: {
+            type: type.INTEGER
         }
     }, {
         timestamps: true

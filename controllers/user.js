@@ -1,4 +1,5 @@
-const { User, Post, Comment } = require('../config/sequelize')
+const { User, Post, Comment } = require('../config/sequelize');
+const bcrypt = require('bcrypt');
 
 module.exports = {
     get: {
@@ -22,10 +23,42 @@ module.exports = {
     },
     post: {
         user: (req, res, next) => {
-            const data = req.body
-            console.log(data);
-            
-            res.json(data)
+            const saltRounds = 10;
+            let { username, password, confirmPassword, firstName = null, lastName = null, email = null, phone = null } = req.body
+            const createdAt = Date.now();
+            const updatedAt = Date.now();
+            const role = 'USER';
+            const ban = 0;
+            if (password !== confirmPassword) {
+                return res.send('Password don\'t match!')
+            }
+            bcrypt.genSalt(saltRounds, (err, salt) => {
+                if (err) { res.send(err); return; }
+                bcrypt.hash(password, salt, (err, hash) => {
+                    if (err) { res.send(err); return; }
+                    password = hash;
+                    const data = {
+                        username,
+                        password,
+                        firstName,
+                        lastName,
+                        email,
+                        phone,
+                        role,
+                        ban,
+                        createdAt,
+                        updatedAt
+                    };
+                    User.create(data)
+                        .then(user => res.json(user))
+                        .catch(err => {
+                            if (err.name === 'SequelizeUniqueConstraintError' && err.parent.code === 'ER_DUP_ENTRY') {
+                                return res.send('Username already taken!');
+                            }
+                        });
+                    return;
+                });
+            });
         }
     }
 };
