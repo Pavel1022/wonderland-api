@@ -9,6 +9,6 @@ module.exports = (sequelize, type) => {
             type: type.STRING
         }
     }, {
-        timestamps: false
+        timestamps: true
     });
 };

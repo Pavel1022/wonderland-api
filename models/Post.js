@@ -5,10 +5,16 @@ module.exports = (sequelize, type) => {
           primaryKey: true,
           autoIncrement: true
         },
-        post: {
+        title: {
             type: type.STRING
+        },
+        description: {
+            type: type.TEXT('long')
+        },
+        image: {
+            type: type.TEXT('long')
         }
     }, {
-        timestamps: false
+        timestamps: true
     });
 };

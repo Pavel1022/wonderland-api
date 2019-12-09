@@ -1,4 +1,4 @@
-const { User, Post, Comment } = require('../config/sequelize');
+const { User } = require('../config/sequelize');
 const bcrypt = require('bcrypt');
 const utils = require('../utils/index');
 const appConfig = require('../app-config');
@@ -29,7 +29,7 @@ module.exports = {
     post: {
         register: (req, res, next) => {
             const saltRounds = 10;
-            let { username, password, confirmPassword, firstName, lastName, email, phone, image = 'https://icon-library.net/images/no-profile-picture-icon-female/no-profile-picture-icon-female-0.jpg' } = req.body
+            let { username, password, confirmPassword, firstName, lastName, email, phone, image = 'default' } = req.body
             const createdAt = Date.now();
             const updatedAt = Date.now();
             const role = 'USER';
@@ -93,8 +93,16 @@ module.exports = {
             })
         },
         editUser: (req, res, next) => {
-            const { firstName, lastName, email, phone, image } = req.body;
+            const { firstName, lastName, email, phone } = req.body;
             const userId = req.params.id;
+            let image;
+            if (req.file) {
+                image = req.file.filename.replace('.jpg', '');
+            }
+            if (req.body.image) {
+                image = req.body.image;
+            }
+
             User.update({ firstName, lastName, email, phone, image }, { where: { id: userId } }).then(() => {
                 res.send('SUCCESS');
             })
@@ -106,7 +114,7 @@ module.exports = {
             User.findOne({ where: { id } })
                 .then(user => Promise.all([user, user.matchPassword(password)]))
                 .then(([user, match]) => {
-                    
+
                     if (!match) {
                         res.send('Passwords don\'t match!');
                         return;
@@ -123,5 +131,20 @@ module.exports = {
                     });
                 });
         },
+        banUser: (req, res, next) => {
+            const { username } = req.body;
+
+            User.update({ ban: 1 }, { where: { username } }).then(() => {
+                res.send('SUCCESS');
+            });
+        },
+
+        unBanUser: (req, res, next) => {
+            const { username } = req.body;
+
+            User.update({ ban: 0 }, { where: { username } }).then(() => {
+                res.send('SUCCESS');
+            });
+        }
     }
 };

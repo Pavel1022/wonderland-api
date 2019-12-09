@@ -4,11 +4,15 @@ const cookieParser = require('cookie-parser');
 const secret = 'secret';
 const express = require('express');
 
+
 module.exports = (app) => {
-    app.use(express.json({limit: '10mb'}));
-    app.use(express.urlencoded({limit: '10mb'}));
-    app.use(bodyParser.json({limit: '10mb'}));
-app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
+    app.use(express.json({ limit: '10mb' }));
+    app.use(express.urlencoded({ limit: '10mb' }));
+    app.use(bodyParser.json({ limit: '10mb' }));
+    app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
     app.use(cors());
     app.use(cookieParser(secret));
+    app.use('/public', express.static(__basedir + '/public'));
+    app.use(express.static(__basedir + '/public'));
+
 };
