@@ -2,6 +2,7 @@ const { User } = require('../config/sequelize');
 const bcrypt = require('bcrypt');
 const utils = require('../utils/index');
 const appConfig = require('../app-config');
+const fs = require('fs');
 
 module.exports = {
     get: {
@@ -98,6 +99,11 @@ module.exports = {
             let image;
             if (req.file) {
                 image = req.file.filename.replace('.jpg', '');
+                User.findByPk(userId).then(user => {
+                    if (user.image !== 'default') {
+                        fs.unlinkSync(__basedir + '/public/user/' + user.image + '.jpg');
+                    }
+                });
             }
             if (req.body.image) {
                 image = req.body.image;
